@@ -6,7 +6,9 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
 } from 'typeorm';
+import { User } from './User';
 
 @Entity()
 @ObjectType()
@@ -20,8 +22,16 @@ export class Tweet extends BaseEntity {
   body!: string;
 
   @Field()
-  @Column()
-  username!: string;
+  @ManyToOne(() => User, (user) => user.tweets, { onDelete: 'CASCADE' })
+  author!: User;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  media: string;
+
+  @Field()
+  @Column({ default: false })
+  has_media!: boolean;
 
   @Field()
   @CreateDateColumn()

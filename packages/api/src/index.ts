@@ -7,6 +7,7 @@ import { Tweet } from './entities/Tweet';
 import { createConnection } from 'typeorm';
 import { ___prod___ } from './utils/contants';
 import { TweetResolvers } from './resolvers/tweets';
+import { User } from './entities/User';
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ const bootstrap = async () => {
     url: process.env.DATABASE_URI,
     logging: true,
     synchronize: !___prod___,
-    entities: [Tweet],
+    entities: [Tweet, User],
   });
 
   if (!conn.isConnected) {
