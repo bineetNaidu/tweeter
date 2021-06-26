@@ -1,0 +1,13 @@
+fragment BaseTweet on Tweet {
+  id
+  body
+  author {
+    id
+    username
+    avatar
+  }
+  media
+  has_media
+  createdAt
+  updatedAt
+}
