@@ -8,6 +8,7 @@ import { createConnection } from 'typeorm';
 import { ___prod___ } from './utils/contants';
 import { TweetResolvers } from './resolvers/tweets';
 import { User } from './entities/User';
+import { UserResolvers } from './resolvers/users';
 
 dotenv.config();
 
@@ -31,7 +32,7 @@ const bootstrap = async () => {
   const server = new ApolloServer({
     schema: await buildSchema({
       validate: false,
-      resolvers: [HelloResolver, TweetResolvers],
+      resolvers: [HelloResolver, TweetResolvers, UserResolvers],
     }),
   });
 
