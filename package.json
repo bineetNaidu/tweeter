@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/bineetNaidu/tweeter/issues"
   },
-  "homepage": "https://github.com/bineetNaidu/tweeter#readme"
+  "homepage": "https://github.com/bineetNaidu/tweeter#readme",
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
 }
