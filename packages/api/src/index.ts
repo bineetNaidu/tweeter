@@ -47,7 +47,6 @@ const bootstrap = async () => {
         token = connection.context.Authorization.split('Bearer ')[1];
       }
       const authUser = decodeToken(token);
-      console.log(authUser);
 
       return { req, res, authUser };
     },
