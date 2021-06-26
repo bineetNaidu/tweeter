@@ -11,6 +11,7 @@ import {
 import { validateRegister } from '../utils/validateRegister';
 import argon from 'argon2';
 import { getConnection } from 'typeorm';
+import { createToken } from '../utils/jwt';
 
 @InputType()
 export class RegisterInput {
@@ -43,6 +44,9 @@ class UserResponse {
 
   @Field(() => User, { nullable: true })
   user?: User;
+
+  @Field()
+  token?: String;
 }
 @Resolver()
 export class UserResolvers {
@@ -98,8 +102,9 @@ export class UserResolvers {
         };
       }
     }
+    const token = createToken(user);
 
-    return { user };
+    return { user, token };
   }
 
   @Mutation(() => UserResponse)
@@ -131,6 +136,8 @@ export class UserResolvers {
       };
     }
 
-    return { user };
+    const token = createToken(user);
+
+    return { user, token };
   }
 }

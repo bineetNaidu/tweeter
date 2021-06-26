@@ -16,6 +16,9 @@ const bootstrap = async () => {
   if (!process.env.DATABASE_URI) {
     throw new Error('??>> {" DATABASE_URI must be defined!! "} ');
   }
+  if (!process.env.JWT_SECRET) {
+    throw new Error('??>> {" JWT_SECRET must be defined!! "} ');
+  }
 
   const conn = await createConnection({
     type: 'postgres',
