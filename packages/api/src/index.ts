@@ -9,6 +9,8 @@ import { ___prod___ } from './utils/contants';
 import { TweetResolvers } from './resolvers/tweets';
 import { User } from './entities/User';
 import { UserResolvers } from './resolvers/users';
+import { IContext } from './utils/types';
+import { decodeToken } from './utils/jwt';
 
 dotenv.config();
 
@@ -37,6 +39,18 @@ const bootstrap = async () => {
       validate: false,
       resolvers: [HelloResolver, TweetResolvers, UserResolvers],
     }),
+    context: ({ req, res, connection }): IContext => {
+      let token = '';
+      if (req && req.headers.authorization) {
+        token = req.headers.authorization.split('Bearer ')[1];
+      } else if (connection && connection.context.Authorization) {
+        token = connection.context.Authorization.split('Bearer ')[1];
+      }
+      const authUser = decodeToken(token);
+      console.log(authUser);
+
+      return { req, res, authUser };
+    },
   });
 
   server.listen().then(({ url }) => {

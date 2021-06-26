@@ -1,11 +1,5 @@
 import jwt from 'jsonwebtoken';
-
-type DecodeTokenType = {
-  username: string;
-  id: number;
-  iat: number;
-  exp: number;
-};
+import { DecodeTokenType } from './types';
 
 export const createToken = ({
   username,
