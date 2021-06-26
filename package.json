@@ -1,0 +1,26 @@
+{
+  "name": "tweeter",
+  "version": "1.0.0",
+  "description": "Tweeter is a small Twitter clone. PS this is one of my side-projects.",
+  "main": "index.js",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bineetNaidu/tweeter.git"
+  },
+  "keywords": [],
+  "author": "BineetNaidu <bineetnaiduapps@gmail.com> (https://bineetnaidu.github.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bineetNaidu/tweeter/issues"
+  },
+  "homepage": "https://github.com/bineetNaidu/tweeter#readme"
+}
