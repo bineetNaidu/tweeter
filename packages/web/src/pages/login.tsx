@@ -5,10 +5,12 @@ import { ErrorMessage, Form as FormikForm, Formik } from 'formik';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
 import { useLoginMutation } from '../generated/graphql';
+import { useStore } from '../lib/store';
 import { withApollo } from '../lib/withApollo';
 import { toErrorMap } from '../utils/toErrorMap';
 
 const Login = () => {
+  const setUser = useStore((s) => s.setUser);
   const router = useRouter();
   const [login] = useLoginMutation();
   return (
@@ -30,6 +32,7 @@ const Login = () => {
             if (data?.login.errors) {
               return setErrors(toErrorMap(data.login.errors));
             } else if (data?.login.token) {
+              setUser(data.login.user!);
               localStorage.setItem('token:tweeter', data?.login.token!);
               setValues({ username: '', password: '' });
               router.push('/');

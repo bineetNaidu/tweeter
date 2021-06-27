@@ -10,10 +10,12 @@ import { ErrorMessage, Form as FormikForm, Formik } from 'formik';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
 import { useRegisterMutation } from '../generated/graphql';
+import { useStore } from '../lib/store';
 import { withApollo } from '../lib/withApollo';
 import { toErrorMap } from '../utils/toErrorMap';
 
 const Register = () => {
+  const setUser = useStore((s) => s.setUser);
   const [register] = useRegisterMutation();
   const router = useRouter();
 
@@ -45,6 +47,7 @@ const Register = () => {
             if (data?.register.errors) {
               return setErrors(toErrorMap(data.register.errors));
             } else if (data?.register.token) {
+              setUser(data.register.user!);
               localStorage.setItem('token:tweeter', data?.register.token!);
               setValues({
                 username: '',
