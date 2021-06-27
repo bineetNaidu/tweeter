@@ -45,7 +45,7 @@ class UserResponse {
   @Field(() => User, { nullable: true })
   user?: User;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   token?: String;
 }
 @Resolver()

@@ -39,6 +39,10 @@ const bootstrap = async () => {
       validate: false,
       resolvers: [HelloResolver, TweetResolvers, UserResolvers],
     }),
+    cors: {
+      origin: 'http://localhost:3000',
+      credentials: true,
+    },
     context: ({ req, res, connection }): IContext => {
       let token = '';
       if (req && req.headers.authorization) {
