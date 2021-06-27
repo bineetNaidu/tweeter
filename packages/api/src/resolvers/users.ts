@@ -1,6 +1,7 @@
 import { User } from '../entities/User';
 import {
   Arg,
+  Ctx,
   Field,
   InputType,
   Mutation,
@@ -12,6 +13,7 @@ import { validateRegister } from '../utils/validateRegister';
 import argon from 'argon2';
 import { getConnection } from 'typeorm';
 import { createToken } from '../utils/jwt';
+import { IContext } from 'src/utils/types';
 
 @InputType()
 export class RegisterInput {
@@ -50,6 +52,16 @@ class UserResponse {
 }
 @Resolver()
 export class UserResolvers {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { authUser }: IContext): Promise<User | null> {
+    if (!authUser) return null;
+    const { id } = authUser;
+    const user = await User.findOne(id);
+    if (!user) return null;
+
+    return user;
+  }
+
   @Query(() => User, { nullable: true })
   async user(@Arg('username') username: string): Promise<User | undefined> {
     return User.findOne({
