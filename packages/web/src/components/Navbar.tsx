@@ -12,9 +12,11 @@ export const Navbar: FC = () => {
   const r = useRouter();
   const isCurrPage = (path: string) =>
     r.pathname === path ? `${styles.tab} ${styles.tab_underline}` : styles.tab;
-  const { isLogged, setUser, logout } = useStore((s) => s);
+  const { isLogged, setUser, logout, user } = useStore((s) => s);
 
-  const { data, loading } = useMeQuery();
+  const { data, loading } = useMeQuery({
+    skip: typeof window === undefined,
+  });
 
   const handleLogout = () => {
     localStorage.removeItem('token:tweeter');
@@ -65,11 +67,8 @@ export const Navbar: FC = () => {
       <div className={styles.navbar__profile}>
         {isLogged ? (
           <>
-            <Avatar
-              shape="square"
-              src="https://avatars.githubusercontent.com/u/66471461?s=400&u=6f64e73da3c61019dd5f3d60b3d13a8591568b6e&v=4"
-            />
-            <span>Bineet Naidu</span>
+            <Avatar shape="square" src={user?.avatar} />
+            <span>@{user?.username}</span>
             <Dropdown overlay={menu} trigger={['click']}>
               <a
                 className="ant-dropdown-link"
