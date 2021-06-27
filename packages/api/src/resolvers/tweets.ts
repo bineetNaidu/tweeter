@@ -2,12 +2,27 @@ import { Tweet } from '../entities/Tweet';
 import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { IContext } from '../utils/types';
 import { User } from '../entities/User';
+import { getConnection } from 'typeorm';
 
 @Resolver()
 export class TweetResolvers {
   @Query(() => [Tweet])
   async tweets(): Promise<Tweet[]> {
-    return Tweet.find({});
+    const tweets = await getConnection().query(
+      `
+			select t.*,
+			json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'avatar', u.avatar
+      ) author
+			from tweet AS t
+			inner join "user" AS u on u.id = t."authorId"
+			order by t."createdAt" DESC 
+			`
+    );
+
+    return tweets;
   }
 
   @Mutation(() => Tweet)
