@@ -1,11 +1,12 @@
-import { FC } from 'react';
-import { Avatar, Menu, Dropdown, Button } from 'antd';
+import { FC, useEffect } from 'react';
+import { Avatar, Menu, Dropdown, Button, Spin } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import styles from '../styles/navbar.module.scss';
 import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
 import { useStore } from '../lib/store';
+import { useMeQuery } from '../generated/graphql';
 
 const menu = (
   <Menu>
@@ -29,7 +30,15 @@ export const Navbar: FC = () => {
   const r = useRouter();
   const isCurrPage = (path: string) =>
     r.pathname === path ? `${styles.tab} ${styles.tab_underline}` : styles.tab;
-  const isLogged = useStore((s) => s.isLogged);
+  const { isLogged, setUser } = useStore((s) => s);
+
+  const { data, loading } = useMeQuery();
+
+  useEffect(() => {
+    if (!loading && data?.me) {
+      setUser(data.me);
+    }
+  }, [loading, isLogged]);
 
   return (
     <nav className={styles.navbar}>
@@ -65,7 +74,7 @@ export const Navbar: FC = () => {
               </a>
             </Dropdown>
           </>
-        ) : (
+        ) : !loading ? (
           <>
             <Link href="/login">
               <Button style={{ marginRight: '5px' }}>Login</Button>
@@ -74,6 +83,8 @@ export const Navbar: FC = () => {
               <Button>Register</Button>
             </Link>
           </>
+        ) : (
+          <Spin />
         )}
       </div>
     </nav>
