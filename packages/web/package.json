@@ -24,6 +24,7 @@
     "@graphql-codegen/typescript": "1.22.3",
     "@graphql-codegen/typescript-operations": "1.18.2",
     "@graphql-codegen/typescript-react-apollo": "2.2.7",
-    "@types/react": "^17.0.11"
+    "@types/react": "^17.0.11",
+    "sass": "^1.35.1"
   }
 }
