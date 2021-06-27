@@ -8,37 +8,42 @@ import { useRouter } from 'next/dist/client/router';
 import { useStore } from '../lib/store';
 import { useMeQuery } from '../generated/graphql';
 
-const menu = (
-  <Menu>
-    <Menu.Item key="0">
-      <Link href="/profile">
-        <div>
-          <UserOutlined />
-          <span style={{ marginLeft: '5px' }}>Profile</span>
-        </div>
-      </Link>
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item key="2" style={{ color: 'red' }}>
-      <LoginOutlined />
-      <span style={{ marginLeft: '5px' }}>Logout</span>
-    </Menu.Item>
-  </Menu>
-);
-
 export const Navbar: FC = () => {
   const r = useRouter();
   const isCurrPage = (path: string) =>
     r.pathname === path ? `${styles.tab} ${styles.tab_underline}` : styles.tab;
-  const { isLogged, setUser } = useStore((s) => s);
+  const { isLogged, setUser, logout } = useStore((s) => s);
 
   const { data, loading } = useMeQuery();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token:tweeter');
+    logout();
+  };
 
   useEffect(() => {
     if (!loading && data?.me) {
       setUser(data.me);
     }
-  }, [loading, isLogged]);
+  }, [loading, isLogged, logout]);
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="0">
+        <Link href="/profile">
+          <div>
+            <UserOutlined />
+            <span style={{ marginLeft: '5px' }}>Profile</span>
+          </div>
+        </Link>
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="2" style={{ color: 'red' }} onClick={handleLogout}>
+        <LoginOutlined />
+        <span style={{ marginLeft: '5px' }}>Logout</span>
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <nav className={styles.navbar}>

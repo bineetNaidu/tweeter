@@ -5,6 +5,7 @@ interface IState {
   isLogged: boolean;
   user: User | null;
   setUser: (user: User) => void;
+  logout: () => void;
 }
 
 export const useStore = create<IState>((set) => ({
@@ -15,4 +16,9 @@ export const useStore = create<IState>((set) => ({
       isLogged: user ? true : false,
       user,
     })),
+  logout: () =>
+    set({
+      isLogged: false,
+      user: null,
+    }),
 }));

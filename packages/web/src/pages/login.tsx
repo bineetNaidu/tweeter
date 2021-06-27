@@ -8,84 +8,92 @@ import { useLoginMutation } from '../generated/graphql';
 import { useStore } from '../lib/store';
 import { withApollo } from '../lib/withApollo';
 import { toErrorMap } from '../utils/toErrorMap';
+import { Navbar } from '../components/Navbar';
 
 const Login = () => {
   const setUser = useStore((s) => s.setUser);
   const router = useRouter();
   const [login] = useLoginMutation();
   return (
-    <Space style={{ display: 'flex', justifyContent: 'center' }}>
-      <Card
-        style={{
-          width: 400,
-          textAlign: 'center',
-          backgroundColor: '#f3f3f3',
-          marginTop: '3rem',
-        }}
-      >
-        <Formik
-          initialValues={{ username: '', password: '' }}
-          onSubmit={async (values, { setErrors, setValues }) => {
-            const { data } = await login({
-              variables: values,
-            });
-            if (data?.login.errors) {
-              return setErrors(toErrorMap(data.login.errors));
-            } else if (data?.login.token) {
-              setUser(data.login.user!);
-              localStorage.setItem('token:tweeter', data?.login.token!);
-              setValues({ username: '', password: '' });
-              router.push('/');
-            }
+    <>
+      <Navbar />
+      <Space style={{ display: 'flex', justifyContent: 'center' }}>
+        <Card
+          style={{
+            width: 400,
+            textAlign: 'center',
+            backgroundColor: '#f3f3f3',
+            marginTop: '3rem',
           }}
         >
-          {({ isSubmitting, getFieldProps }) => (
-            <FormikForm>
-              <Title level={3}>Login to Tweeter</Title>
-              <Form.Item name="username">
-                <Input
-                  prefix={<UserOutlined className="site-form-item-icon" />}
-                  placeholder="Username"
-                  {...getFieldProps('username')}
-                />
-                <ErrorMessage
-                  name="username"
-                  component="div"
-                  render={(message) => <Alert message={message} type="error" />}
-                />
-              </Form.Item>
-              <Form.Item name="password">
-                <Input
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Password"
-                  {...getFieldProps('password')}
-                />
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  render={(message) => <Alert message={message} type="error" />}
-                />
-              </Form.Item>
-              <Link href="/forgot-password">Forgot password</Link>
+          <Formik
+            initialValues={{ username: '', password: '' }}
+            onSubmit={async (values, { setErrors, setValues }) => {
+              const { data } = await login({
+                variables: values,
+              });
+              if (data?.login.errors) {
+                return setErrors(toErrorMap(data.login.errors));
+              } else if (data?.login.token) {
+                setUser(data.login.user!);
+                localStorage.setItem('token:tweeter', data?.login.token!);
+                setValues({ username: '', password: '' });
+                router.push('/');
+              }
+            }}
+          >
+            {({ isSubmitting, getFieldProps }) => (
+              <FormikForm>
+                <Title level={3}>Login to Tweeter</Title>
+                <Form.Item name="username">
+                  <Input
+                    prefix={<UserOutlined className="site-form-item-icon" />}
+                    placeholder="Username"
+                    {...getFieldProps('username')}
+                  />
+                  <ErrorMessage
+                    name="username"
+                    component="div"
+                    render={(message) => (
+                      <Alert message={message} type="error" />
+                    )}
+                  />
+                </Form.Item>
+                <Form.Item name="password">
+                  <Input
+                    prefix={<LockOutlined className="site-form-item-icon" />}
+                    type="password"
+                    placeholder="Password"
+                    {...getFieldProps('password')}
+                  />
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    render={(message) => (
+                      <Alert message={message} type="error" />
+                    )}
+                  />
+                </Form.Item>
+                <Link href="/forgot-password">Forgot password</Link>
 
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="login-form-button"
-                  loading={isSubmitting}
-                >
-                  Log in
-                </Button>
-                <br />
-                Or <Link href="/register">register now!</Link>
-              </Form.Item>
-            </FormikForm>
-          )}
-        </Formik>
-      </Card>
-    </Space>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="login-form-button"
+                    loading={isSubmitting}
+                  >
+                    Log in
+                  </Button>
+                  <br />
+                  Or <Link href="/register">register now!</Link>
+                </Form.Item>
+              </FormikForm>
+            )}
+          </Formik>
+        </Card>
+      </Space>
+    </>
   );
 };
 
