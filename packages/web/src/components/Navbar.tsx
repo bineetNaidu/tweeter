@@ -1,10 +1,11 @@
 import { FC } from 'react';
-import { Avatar, Menu, Dropdown } from 'antd';
+import { Avatar, Menu, Dropdown, Button } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import styles from '../styles/navbar.module.scss';
 import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
+import { useStore } from '../lib/store';
 
 const menu = (
   <Menu>
@@ -26,9 +27,10 @@ const menu = (
 
 export const Navbar: FC = () => {
   const r = useRouter();
-  console.log(r);
   const isCurrPage = (path: string) =>
     r.pathname === path ? `${styles.tab} ${styles.tab_underline}` : styles.tab;
+  const isLogged = useStore((s) => s.isLogged);
+
   return (
     <nav className={styles.navbar}>
       {/* Logo */}
@@ -36,22 +38,43 @@ export const Navbar: FC = () => {
         Tweeter
       </Title>
       <div className={styles.navbar__tabs}>
-        <div className={isCurrPage('/')}>Home</div>
-        <div className={isCurrPage('/expore')}>Expore</div>
-        <div className={isCurrPage('/bookmarks')}>Bookmarks</div>
+        <Link href="/">
+          <div className={isCurrPage('/')}>Home</div>
+        </Link>
+        <Link href="/explore">
+          <div className={isCurrPage('/explore')}>Expore</div>
+        </Link>
+        <Link href="/bookmarks">
+          <div className={isCurrPage('/bookmarks')}>Bookmarks</div>
+        </Link>
       </div>
-      {/* Auth details */}
       <div className={styles.navbar__profile}>
-        <Avatar
-          shape="square"
-          src="https://avatars.githubusercontent.com/u/66471461?s=400&u=6f64e73da3c61019dd5f3d60b3d13a8591568b6e&v=4"
-        />
-        <span>Bineet Naidu</span>
-        <Dropdown overlay={menu} trigger={['click']}>
-          <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-            <DownOutlined />
-          </a>
-        </Dropdown>
+        {isLogged ? (
+          <>
+            <Avatar
+              shape="square"
+              src="https://avatars.githubusercontent.com/u/66471461?s=400&u=6f64e73da3c61019dd5f3d60b3d13a8591568b6e&v=4"
+            />
+            <span>Bineet Naidu</span>
+            <Dropdown overlay={menu} trigger={['click']}>
+              <a
+                className="ant-dropdown-link"
+                onClick={(e) => e.preventDefault()}
+              >
+                <DownOutlined />
+              </a>
+            </Dropdown>
+          </>
+        ) : (
+          <>
+            <Link href="/login">
+              <Button style={{ marginRight: '5px' }}>Login</Button>
+            </Link>
+            <Link href="/register">
+              <Button>Register</Button>
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );
