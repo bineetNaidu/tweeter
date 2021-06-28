@@ -23,6 +23,7 @@ export class TweetResolvers {
       where: {
         tweet: tweet.id,
       },
+      relations: ['user', 'tweet'],
     });
 
     return likes;
