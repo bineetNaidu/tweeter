@@ -4,7 +4,15 @@ import {
   useDeleteTweetMutation,
 } from '../generated/graphql';
 import { Avatar, Image, Menu, Dropdown } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
+import {
+  MoreOutlined,
+  MessageOutlined,
+  RetweetOutlined,
+  HeartOutlined,
+  SaveOutlined,
+  PushpinOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import styles from '../styles/tweetCard.module.scss';
 import { useStore } from '../lib/store';
 
@@ -17,8 +25,9 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
   const [deleteTweet] = useDeleteTweetMutation();
   const menu = (
     <Menu>
-      <Menu.Item key="0">Pin</Menu.Item>
-      <Menu.Item key="1">Edit</Menu.Item>
+      <Menu.Item key="0">
+        <PushpinOutlined /> Pin
+      </Menu.Item>
       <Menu.Divider />
       <Menu.Item
         style={{ color: 'red' }}
@@ -32,7 +41,7 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
           });
         }}
       >
-        Delete
+        <DeleteOutlined /> Delete
       </Menu.Item>
     </Menu>
   );
@@ -71,10 +80,18 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
       </div>
 
       <div className={styles.tweetCard__footer}>
-        <button>Comment</button>
-        <button>Retweet</button>
-        <button>Like</button>
-        <button>Save</button>
+        <button>
+          <MessageOutlined /> Comment
+        </button>
+        <button>
+          <RetweetOutlined /> Retweet
+        </button>
+        <button>
+          <HeartOutlined /> Like
+        </button>
+        <button>
+          <SaveOutlined /> Save
+        </button>
       </div>
     </div>
   );
