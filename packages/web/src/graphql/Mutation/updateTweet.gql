@@ -1,0 +1,6 @@
+mutation UpdateTweet($id: Float!, $body: String!, $media: String) {
+  updateTweet(id: $id, body: $body, media: $media) {
+    id
+    body
+  }
+}

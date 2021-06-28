@@ -10,6 +10,13 @@ $grey-color: rgb(157, 151, 151);
   &__header {
     display: flex;
     align-items: center;
+    position: relative;
+
+    .header_ctx {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
 
     .header__meta {
       margin-left: 0.8rem;
