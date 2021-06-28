@@ -1,19 +1,24 @@
-import { Typography, Avatar, Input, Button } from 'antd';
+import { Typography, Avatar, Input, Spin } from 'antd';
 import { useStore } from '../lib/store';
 import { GlobalOutlined, FileImageOutlined } from '@ant-design/icons';
 import { Formik, Form } from 'formik';
 import styles from '../styles/createTweetForm.module.scss';
 import { useCreateTweetMutation } from '../generated/graphql';
+import { useState } from 'react';
 
 const { Title } = Typography;
 const { TextArea } = Input;
 export const CreateTweetForm = () => {
+  const [show, setShow] = useState(false);
   const { user } = useStore();
   const [createTweet] = useCreateTweetMutation();
   return (
     <Formik
       initialValues={{ body: '', media: '' }}
       onSubmit={async (values, { setValues }) => {
+        if (!values.body) {
+          return;
+        }
         const computedValues =
           values.media === '' ? { body: values.body } : values;
         await createTweet({
@@ -25,7 +30,7 @@ export const CreateTweetForm = () => {
         setValues({ body: '', media: '' });
       }}
     >
-      {({ isSubmitting, getFieldProps, submitForm }) => (
+      {({ isSubmitting, getFieldProps }) => (
         <Form className={styles.createTweetForm}>
           <div className={styles.createTweetForm__header}>
             <Title level={5}>Tweet Something</Title>
@@ -39,18 +44,23 @@ export const CreateTweetForm = () => {
               src={user?.avatar}
               alt={user?.username}
             />
-            <TextArea
-              showCount
-              maxLength={200}
-              placeholder="What's Happening"
-              className="txtarea"
-              {...getFieldProps('body')}
-            />
+            <div style={{ flex: 0.97 }}>
+              <TextArea
+                showCount
+                maxLength={200}
+                placeholder="What's Happening"
+                className="txtarea"
+                {...getFieldProps('body')}
+              />
+              {show ? (
+                <Input placeholder="Image Url" {...getFieldProps('media')} />
+              ) : null}
+            </div>
           </div>
 
           <div className={styles.createTweetForm__footer}>
             <div className={styles.footer_ctx}>
-              <button>
+              <button onClick={() => setShow((prev) => !prev)}>
                 <FileImageOutlined />
               </button>
               <button>
@@ -58,9 +68,9 @@ export const CreateTweetForm = () => {
                 <span>Everyone Can Reply</span>
               </button>
             </div>
-            <Button loading={isSubmitting} type="primary" onClick={submitForm}>
-              Tweet
-            </Button>
+            <button className={styles.submit_btn} type="submit">
+              {isSubmitting ? <Spin /> : null} Tweet
+            </button>
           </div>
         </Form>
       )}

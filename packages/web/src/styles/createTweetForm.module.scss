@@ -25,6 +25,14 @@
     color: #1890ff;
     align-items: center;
 
+    .submit_btn {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 4px 10px;
+    }
+
     .footer_ctx {
       & > button {
         border: none;
