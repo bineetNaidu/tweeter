@@ -1,0 +1,44 @@
+.createTweetForm {
+  width: 600px;
+  background-color: #fff;
+  margin: 1rem auto;
+  padding: 1rem;
+  border-radius: 9px;
+
+  &__header {
+    border-bottom: 0.5px solid rgb(240, 240, 240);
+  }
+
+  &__body {
+    margin: 0.5rem auto;
+    display: flex;
+
+    & > .txtarea {
+      border: transparent !important;
+      width: 100% !important;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    color: #1890ff;
+    align-items: center;
+
+    .footer_ctx {
+      & > button {
+        border: none;
+        outline: none;
+        border-radius: 5px;
+        margin: 0 0.2rem;
+        padding: 0.4rem 0.2rem;
+        cursor: pointer;
+        background-color: transparent;
+
+        & > span {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}

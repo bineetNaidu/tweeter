@@ -1,19 +1,16 @@
-import { Typography, Spin } from 'antd';
+import { Spin } from 'antd';
+import { CreateTweetForm } from '../components/CreateTweetForm';
 import { Navbar } from '../components/Navbar';
 import { TweetCard } from '../components/TweetCard';
 import { useTweetsQuery } from '../generated/graphql';
 import { withApollo } from '../lib/withApollo';
-
-const { Title } = Typography;
 
 const Home = () => {
   const { data, loading } = useTweetsQuery();
   return (
     <div>
       <Navbar />
-      <Title>Hello Tweeter</Title>
-      {/* Post Tweet Form */}
-      {/* All Tweets */}
+      <CreateTweetForm />
       {loading && !data ? (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Spin />
