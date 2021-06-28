@@ -23,12 +23,22 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type Like = {
+  __typename?: 'Like';
+  id: Scalars['Float'];
+  user: User;
+  tweet: Tweet;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   deleteTweet: Scalars['Boolean'];
   createTweet: Tweet;
   register: UserResponse;
   login: UserResponse;
+  like: Scalars['Boolean'];
 };
 
 
@@ -51,6 +61,11 @@ export type MutationRegisterArgs = {
 export type MutationLoginArgs = {
   password: Scalars['String'];
   username: Scalars['String'];
+};
+
+
+export type MutationLikeArgs = {
+  tweetId: Scalars['Float'];
 };
 
 export type Query = {
@@ -83,6 +98,8 @@ export type Tweet = {
   author: User;
   media?: Maybe<Scalars['String']>;
   has_media: Scalars['Boolean'];
+  likes: Array<Like>;
+  likeStatus?: Maybe<Scalars['Boolean']>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
 };
@@ -146,6 +163,16 @@ export type DeleteTweetMutation = (
   & Pick<Mutation, 'deleteTweet'>
 );
 
+export type LikeMutationVariables = Exact<{
+  tweetId: Scalars['Float'];
+}>;
+
+
+export type LikeMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'like'>
+);
+
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
@@ -205,6 +232,15 @@ export type TweetsQuery = (
   { __typename?: 'Query' }
   & { tweets: Array<(
     { __typename?: 'Tweet' }
+    & Pick<Tweet, 'likeStatus'>
+    & { likes: Array<(
+      { __typename?: 'Like' }
+      & Pick<Like, 'id'>
+      & { user: (
+        { __typename?: 'User' }
+        & Pick<User, 'username'>
+      ) }
+    )> }
     & BaseTweetFragment
   )> }
 );
@@ -320,6 +356,37 @@ export function useDeleteTweetMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteTweetMutationHookResult = ReturnType<typeof useDeleteTweetMutation>;
 export type DeleteTweetMutationResult = Apollo.MutationResult<DeleteTweetMutation>;
 export type DeleteTweetMutationOptions = Apollo.BaseMutationOptions<DeleteTweetMutation, DeleteTweetMutationVariables>;
+export const LikeDocument = gql`
+    mutation Like($tweetId: Float!) {
+  like(tweetId: $tweetId)
+}
+    `;
+export type LikeMutationFn = Apollo.MutationFunction<LikeMutation, LikeMutationVariables>;
+
+/**
+ * __useLikeMutation__
+ *
+ * To run a mutation, you first call `useLikeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLikeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [likeMutation, { data, loading, error }] = useLikeMutation({
+ *   variables: {
+ *      tweetId: // value for 'tweetId'
+ *   },
+ * });
+ */
+export function useLikeMutation(baseOptions?: Apollo.MutationHookOptions<LikeMutation, LikeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LikeMutation, LikeMutationVariables>(LikeDocument, options);
+      }
+export type LikeMutationHookResult = ReturnType<typeof useLikeMutation>;
+export type LikeMutationResult = Apollo.MutationResult<LikeMutation>;
+export type LikeMutationOptions = Apollo.BaseMutationOptions<LikeMutation, LikeMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
@@ -439,6 +506,13 @@ export const TweetsDocument = gql`
     query Tweets {
   tweets {
     ...BaseTweet
+    likeStatus
+    likes {
+      id
+      user {
+        username
+      }
+    }
   }
 }
     ${BaseTweetFragmentDoc}`;

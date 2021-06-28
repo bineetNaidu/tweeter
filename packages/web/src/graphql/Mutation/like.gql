@@ -1,0 +1,3 @@
+mutation Like($tweetId: Float!) {
+  like(tweetId: $tweetId)
+}

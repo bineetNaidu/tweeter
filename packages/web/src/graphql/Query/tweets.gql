@@ -1,5 +1,12 @@
 query Tweets {
   tweets {
     ...BaseTweet
+    likeStatus
+    likes {
+      id
+      user {
+        username
+      }
+    }
   }
 }
