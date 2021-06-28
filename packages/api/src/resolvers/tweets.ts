@@ -14,28 +14,6 @@ import { isAuthed } from '../utils/middlewares';
 
 @Resolver()
 export class TweetResolvers {
-  @Mutation(() => Tweet, { nullable: true })
-  @UseMiddleware(isAuthed)
-  async updateTweet(
-    @Arg('id') id: number,
-    @Arg('body') body: string,
-    @Arg('media', { nullable: true }) media: string,
-    @Ctx() { authUser }: IContext
-  ): Promise<Tweet | null> {
-    const result = await getConnection()
-      .createQueryBuilder()
-      .update(Tweet)
-      .set({ body, media, has_media: media ? true : false })
-      .where('id = :id and "authorId" = :authorId', {
-        id,
-        authorId: authUser!.id,
-      })
-      .returning('*')
-      .execute();
-
-    return result.raw[0];
-  }
-
   @Mutation(() => Boolean)
   @UseMiddleware(isAuthed)
   async deleteTweet(
