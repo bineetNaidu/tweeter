@@ -39,6 +39,9 @@ export class Tweet extends BaseEntity {
   @OneToMany(() => Like, (like) => like.user, { onDelete: 'CASCADE' })
   likes: Like[];
 
+  @Field(() => Boolean, { nullable: true })
+  likeStatus: boolean | null;
+
   @Field()
   @CreateDateColumn()
   createdAt: Date;

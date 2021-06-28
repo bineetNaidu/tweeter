@@ -29,6 +29,22 @@ export class TweetResolvers {
     return likes;
   }
 
+  @FieldResolver(() => Boolean, { nullable: true })
+  async likeStatus(
+    @Root() tweet: Tweet,
+    @Ctx() { authUser }: IContext
+  ): Promise<boolean | null> {
+    if (!authUser) return null;
+    const like = await Like.findOne({
+      where: {
+        user: authUser.id,
+        tweet: tweet.id,
+      },
+    });
+
+    return !!like;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuthed)
   async deleteTweet(
