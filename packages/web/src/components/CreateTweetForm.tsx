@@ -3,16 +3,26 @@ import { useStore } from '../lib/store';
 import { GlobalOutlined, FileImageOutlined } from '@ant-design/icons';
 import { Formik, Form } from 'formik';
 import styles from '../styles/createTweetForm.module.scss';
+import { useCreateTweetMutation } from '../generated/graphql';
 
 const { Title } = Typography;
 const { TextArea } = Input;
 export const CreateTweetForm = () => {
   const { user } = useStore();
+  const [createTweet] = useCreateTweetMutation();
   return (
     <Formik
       initialValues={{ body: '', media: '' }}
-      onSubmit={(values) => {
-        console.log(values);
+      onSubmit={async (values, { setValues }) => {
+        const computedValues =
+          values.media === '' ? { body: values.body } : values;
+        await createTweet({
+          variables: computedValues,
+          update: (cache) => {
+            cache.evict({ fieldName: 'tweets' });
+          },
+        });
+        setValues({ body: '', media: '' });
       }}
     >
       {({ isSubmitting, getFieldProps, submitForm }) => (

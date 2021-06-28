@@ -1,0 +1,9 @@
+mutation CreateTweet($body: String!, $media: String) {
+  createTweet(body: $body, media: $media) {
+    id
+    body
+    media
+    has_media
+    createdAt
+  }
+}

@@ -33,7 +33,7 @@ export type Mutation = {
 
 export type MutationCreateTweetArgs = {
   body: Scalars['String'];
-  username: Scalars['String'];
+  media?: Maybe<Scalars['String']>;
 };
 
 
@@ -114,6 +114,20 @@ export type BaseTweetFragment = (
 export type BaseUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'first_name' | 'last_name' | 'username' | 'email' | 'bio' | 'avatar' | 'banner' | 'createdAt' | 'updatedAt'>
+);
+
+export type CreateTweetMutationVariables = Exact<{
+  body: Scalars['String'];
+  media?: Maybe<Scalars['String']>;
+}>;
+
+
+export type CreateTweetMutation = (
+  { __typename?: 'Mutation' }
+  & { createTweet: (
+    { __typename?: 'Tweet' }
+    & Pick<Tweet, 'id' | 'body' | 'media' | 'has_media' | 'createdAt'>
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -221,6 +235,44 @@ export const BaseUserFragmentDoc = gql`
   updatedAt
 }
     `;
+export const CreateTweetDocument = gql`
+    mutation CreateTweet($body: String!, $media: String) {
+  createTweet(body: $body, media: $media) {
+    id
+    body
+    media
+    has_media
+    createdAt
+  }
+}
+    `;
+export type CreateTweetMutationFn = Apollo.MutationFunction<CreateTweetMutation, CreateTweetMutationVariables>;
+
+/**
+ * __useCreateTweetMutation__
+ *
+ * To run a mutation, you first call `useCreateTweetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTweetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTweetMutation, { data, loading, error }] = useCreateTweetMutation({
+ *   variables: {
+ *      body: // value for 'body'
+ *      media: // value for 'media'
+ *   },
+ * });
+ */
+export function useCreateTweetMutation(baseOptions?: Apollo.MutationHookOptions<CreateTweetMutation, CreateTweetMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTweetMutation, CreateTweetMutationVariables>(CreateTweetDocument, options);
+      }
+export type CreateTweetMutationHookResult = ReturnType<typeof useCreateTweetMutation>;
+export type CreateTweetMutationResult = Apollo.MutationResult<CreateTweetMutation>;
+export type CreateTweetMutationOptions = Apollo.BaseMutationOptions<CreateTweetMutation, CreateTweetMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
