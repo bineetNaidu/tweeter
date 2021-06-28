@@ -11,6 +11,7 @@ import { User } from './entities/User';
 import { UserResolvers } from './resolvers/users';
 import { IContext } from './utils/types';
 import { decodeToken } from './utils/jwt';
+import { Like } from './entities/Like';
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ const bootstrap = async () => {
     url: process.env.DATABASE_URI,
     logging: true,
     synchronize: !___prod___,
-    entities: [Tweet, User],
+    entities: [Tweet, User, Like],
   });
 
   if (!conn.isConnected) {

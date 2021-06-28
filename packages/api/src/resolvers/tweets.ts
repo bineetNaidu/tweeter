@@ -2,18 +2,32 @@ import { Tweet } from '../entities/Tweet';
 import {
   Arg,
   Ctx,
+  FieldResolver,
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from 'type-graphql';
 import { IContext } from '../utils/types';
 import { User } from '../entities/User';
 import { getConnection } from 'typeorm';
 import { isAuthed } from '../utils/middlewares';
+import { Like } from '../entities/Like';
 
-@Resolver()
+@Resolver(Tweet)
 export class TweetResolvers {
+  @FieldResolver()
+  async likes(@Root() tweet: Tweet) {
+    const likes = await Like.find({
+      where: {
+        tweet: tweet.id,
+      },
+    });
+
+    return likes;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuthed)
   async deleteTweet(

@@ -7,7 +7,9 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
+import { Like } from './Like';
 import { User } from './User';
 
 @Entity()
@@ -32,6 +34,10 @@ export class Tweet extends BaseEntity {
   @Field()
   @Column({ default: false })
   has_media!: boolean;
+
+  @Field(() => [Like])
+  @OneToMany(() => Like, (like) => like.user, { onDelete: 'CASCADE' })
+  likes: Like[];
 
   @Field()
   @CreateDateColumn()
