@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import {
-  BaseTweetFragment,
+  Tweet,
   useDeleteTweetMutation,
+  useLikeMutation,
 } from '../generated/graphql';
 import { Avatar, Image, Menu, Dropdown } from 'antd';
 import {
@@ -17,10 +18,11 @@ import styles from '../styles/tweetCard.module.scss';
 import { useStore } from '../lib/store';
 
 interface Props {
-  tweet: BaseTweetFragment;
+  tweet: Tweet;
 }
 
 export const TweetCard: FC<Props> = ({ tweet }) => {
+  const [like] = useLikeMutation();
   const { user, isLogged } = useStore();
   const [deleteTweet] = useDeleteTweetMutation();
   const menu = (
@@ -77,6 +79,9 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
       <div className={styles.tweetCard__body}>
         <p>{tweet.body}</p>
         {tweet.has_media ? <Image width={'100%'} src={tweet.media!} /> : null}
+        <div className={styles.tweet_metadata}>
+          <span>{tweet.likes.length} likes</span>
+        </div>
       </div>
 
       <div className={styles.tweetCard__footer}>
@@ -86,7 +91,14 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
         <button>
           <RetweetOutlined /> Retweet
         </button>
-        <button>
+        <button
+          style={tweet.likeStatus ? { color: 'red' } : undefined}
+          onClick={async () => {
+            await like({
+              variables: { tweetId: tweet.id },
+            });
+          }}
+        >
           <HeartOutlined /> Like
         </button>
         <button>

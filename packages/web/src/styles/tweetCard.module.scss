@@ -35,8 +35,15 @@ $grey-color: rgb(157, 151, 151);
   }
 
   &__body {
-    margin: 1rem auto;
+    margin: 0.5rem auto;
+
+    .tweet_metadata {
+      display: flex;
+      flex-direction: row-reverse;
+      color: $grey-color;
+    }
   }
+
   &__footer {
     border-top: 0.5px solid rgba(190, 185, 179, 0.5);
     padding-top: 0.5rem;
