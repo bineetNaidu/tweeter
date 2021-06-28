@@ -11,7 +11,13 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
   return (
     <div className={styles.tweetCard}>
       <div className={styles.tweetCard__header}>
-        <Avatar src={tweet.author.avatar} alt={tweet.author.username} />
+        <Avatar
+          shape="square"
+          size="large"
+          style={{ borderRadius: 5 }}
+          src={tweet.author.avatar}
+          alt={tweet.author.username}
+        />
         <div className={styles.header__meta}>
           <span>{tweet.author.username}</span>
           <span>{new Date(tweet.createdAt).toUTCString()}</span>
@@ -23,7 +29,12 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
         {tweet.has_media ? <Image width={'100%'} src={tweet.media!} /> : null}
       </div>
 
-      <div className={styles.tweetCard__footer}></div>
+      <div className={styles.tweetCard__footer}>
+        <button>Comment</button>
+        <button>Retweet</button>
+        <button>Like</button>
+        <button>Save</button>
+      </div>
     </div>
   );
 };

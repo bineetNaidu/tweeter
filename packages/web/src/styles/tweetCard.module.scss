@@ -1,3 +1,5 @@
+$grey-color: rgb(157, 151, 151);
+
 .tweetCard {
   width: 600px;
   background-color: #fff;
@@ -8,7 +10,6 @@
   &__header {
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
 
     .header__meta {
       margin-left: 0.8rem;
@@ -21,13 +22,31 @@
 
       & span:last-child {
         font-weight: 200;
-        color: rgb(157, 151, 151);
+        color: $grey-color;
       }
     }
   }
 
   &__body {
+    margin: 1rem auto;
   }
   &__footer {
+    border-top: 0.5px solid rgba(190, 185, 179, 0.5);
+    padding-top: 0.5rem;
+    display: flex;
+
+    & > button {
+      flex: 1;
+      padding: 0.3rem 0;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background-color: transparent;
+      border-radius: 9px;
+
+      &:hover {
+        background-color: rgb(239, 239, 239);
+      }
+    }
   }
 }
