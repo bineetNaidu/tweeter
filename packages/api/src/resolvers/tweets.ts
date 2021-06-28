@@ -1,11 +1,40 @@
 import { Tweet } from '../entities/Tweet';
-import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from 'type-graphql';
 import { IContext } from '../utils/types';
 import { User } from '../entities/User';
 import { getConnection } from 'typeorm';
+import { isAuthed } from '../utils/middlewares';
 
 @Resolver()
 export class TweetResolvers {
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuthed)
+  async deleteTweet(
+    @Arg('id') id: number,
+    @Ctx() { authUser }: IContext
+  ): Promise<boolean> {
+    try {
+      const tweet = await Tweet.findOne({
+        where: {
+          id,
+          author: authUser!.id,
+        },
+      });
+      if (!tweet) throw new Error('tweet not found!');
+      await tweet.remove();
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   @Query(() => [Tweet])
   async tweets(): Promise<Tweet[]> {
     const tweets = await getConnection().query(
