@@ -13,6 +13,7 @@ import { IContext } from './utils/types';
 import { decodeToken } from './utils/jwt';
 import { Like } from './entities/Like';
 import { LikeResolver } from './resolvers/like';
+import { Comment } from './entities/Comment';
 
 dotenv.config();
 
@@ -29,7 +30,7 @@ const bootstrap = async () => {
     url: process.env.DATABASE_URI,
     logging: true,
     synchronize: !___prod___,
-    entities: [Tweet, User, Like],
+    entities: [Tweet, User, Like, Comment],
   });
 
   if (!conn.isConnected) {

@@ -9,6 +9,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { Comment } from './Comment';
 import { Like } from './Like';
 import { User } from './User';
 
@@ -38,6 +39,10 @@ export class Tweet extends BaseEntity {
   @Field(() => [Like])
   @OneToMany(() => Like, (like) => like.user, { onDelete: 'CASCADE' })
   likes: Like[];
+
+  @Field(() => [Comment])
+  @OneToMany(() => Comment, (comment) => comment.user, { onDelete: 'CASCADE' })
+  comments: Comment[];
 
   @Field(() => Boolean, { nullable: true })
   likeStatus: boolean | null;
