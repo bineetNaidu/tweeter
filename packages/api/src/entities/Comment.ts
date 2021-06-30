@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   Column,
-  JoinColumn,
 } from 'typeorm';
 import { Tweet } from './Tweet';
 import { User } from './User';
@@ -25,8 +24,7 @@ export class Comment extends BaseEntity {
 
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  user!: Promise<User>;
+  user!: User;
 
   @Field(() => Tweet)
   @ManyToOne(() => Tweet, (tweet) => tweet.comments, { onDelete: 'CASCADE' })

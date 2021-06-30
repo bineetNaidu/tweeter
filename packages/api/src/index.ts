@@ -14,6 +14,7 @@ import { decodeToken } from './utils/jwt';
 import { Like } from './entities/Like';
 import { LikeResolver } from './resolvers/like';
 import { Comment } from './entities/Comment';
+import { CommentResolver } from './resolvers/comments';
 
 dotenv.config();
 
@@ -40,7 +41,13 @@ const bootstrap = async () => {
   const server = new ApolloServer({
     schema: await buildSchema({
       validate: false,
-      resolvers: [HelloResolver, TweetResolvers, UserResolvers, LikeResolver],
+      resolvers: [
+        HelloResolver,
+        TweetResolvers,
+        UserResolvers,
+        LikeResolver,
+        CommentResolver,
+      ],
     }),
     cors: {
       origin: 'http://localhost:3000',

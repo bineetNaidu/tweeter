@@ -14,6 +14,7 @@ import { User } from '../entities/User';
 import { getConnection } from 'typeorm';
 import { isAuthed } from '../utils/middlewares';
 import { Like } from '../entities/Like';
+import { Comment } from '../entities/Comment';
 
 @Resolver(Tweet)
 export class TweetResolvers {
@@ -27,6 +28,18 @@ export class TweetResolvers {
     });
 
     return likes;
+  }
+
+  @FieldResolver()
+  async comments(@Root() tweet: Tweet) {
+    const comments = await Comment.find({
+      where: {
+        tweet: tweet.id,
+      },
+      relations: ['user', 'tweet'],
+    });
+
+    return comments;
   }
 
   @FieldResolver(() => Boolean, { nullable: true })
