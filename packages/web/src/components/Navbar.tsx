@@ -7,9 +7,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
 import { useStore } from '../lib/store';
 import { useMeQuery } from '../generated/graphql';
+import { useApolloClient } from '@apollo/client';
 
 export const Navbar: FC = () => {
   const r = useRouter();
+  const apolloClient = useApolloClient();
   const isCurrPage = (path: string) =>
     r.pathname === path ? `${styles.tab} ${styles.tab_underline}` : styles.tab;
   const { isLogged, setUser, logout, user } = useStore((s) => s);
@@ -18,9 +20,10 @@ export const Navbar: FC = () => {
     skip: typeof window === undefined,
   });
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem('token:tweeter');
     logout();
+    await apolloClient.resetStore();
   };
 
   useEffect(() => {
