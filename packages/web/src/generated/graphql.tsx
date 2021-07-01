@@ -16,6 +16,16 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type Comment = {
+  __typename?: 'Comment';
+  id: Scalars['Float'];
+  text: Scalars['String'];
+  user: User;
+  tweet: Tweet;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
 
 export type FieldError = {
   __typename?: 'FieldError';
@@ -39,6 +49,9 @@ export type Mutation = {
   register: UserResponse;
   login: UserResponse;
   like: Scalars['Boolean'];
+  addComment: Comment;
+  updateComment?: Maybe<Comment>;
+  deleteComment: Scalars['Boolean'];
 };
 
 
@@ -66,6 +79,23 @@ export type MutationLoginArgs = {
 
 export type MutationLikeArgs = {
   tweetId: Scalars['Float'];
+};
+
+
+export type MutationAddCommentArgs = {
+  text: Scalars['String'];
+  tweetId: Scalars['Int'];
+};
+
+
+export type MutationUpdateCommentArgs = {
+  text: Scalars['String'];
+  id: Scalars['Int'];
+};
+
+
+export type MutationDeleteCommentArgs = {
+  id: Scalars['Int'];
 };
 
 export type Query = {
@@ -99,6 +129,7 @@ export type Tweet = {
   media?: Maybe<Scalars['String']>;
   has_media: Scalars['Boolean'];
   likes: Array<Like>;
+  comments: Array<Comment>;
   likeStatus?: Maybe<Scalars['Boolean']>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -125,6 +156,15 @@ export type UserResponse = {
   token?: Maybe<Scalars['String']>;
 };
 
+export type BaseCommentFragment = (
+  { __typename?: 'Comment' }
+  & Pick<Comment, 'id' | 'text' | 'createdAt' | 'updatedAt'>
+  & { user: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'avatar'>
+  ) }
+);
+
 export type BaseTweetFragment = (
   { __typename?: 'Tweet' }
   & Pick<Tweet, 'id' | 'body' | 'media' | 'has_media' | 'createdAt' | 'updatedAt'>
@@ -139,6 +179,20 @@ export type BaseUserFragment = (
   & Pick<User, 'id' | 'first_name' | 'last_name' | 'username' | 'email' | 'bio' | 'avatar' | 'banner' | 'createdAt' | 'updatedAt'>
 );
 
+export type AddCommentMutationVariables = Exact<{
+  tweetId: Scalars['Int'];
+  text: Scalars['String'];
+}>;
+
+
+export type AddCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { addComment: (
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'text'>
+  ) }
+);
+
 export type CreateTweetMutationVariables = Exact<{
   body: Scalars['String'];
   media?: Maybe<Scalars['String']>;
@@ -151,6 +205,16 @@ export type CreateTweetMutation = (
     { __typename?: 'Tweet' }
     & Pick<Tweet, 'id' | 'body' | 'media' | 'has_media' | 'createdAt'>
   ) }
+);
+
+export type DeleteCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteCommentMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteComment'>
 );
 
 export type DeleteTweetMutationVariables = Exact<{
@@ -214,6 +278,20 @@ export type RegisterMutation = (
   ) }
 );
 
+export type UpdateCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+  text: Scalars['String'];
+}>;
+
+
+export type UpdateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { updateComment?: Maybe<(
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'text' | 'createdAt' | 'updatedAt'>
+  )> }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -240,6 +318,9 @@ export type TweetsQuery = (
         { __typename?: 'User' }
         & Pick<User, 'username'>
       ) }
+    )>, comments: Array<(
+      { __typename?: 'Comment' }
+      & BaseCommentFragment
     )> }
     & BaseTweetFragment
   )> }
@@ -258,6 +339,19 @@ export type UserQuery = (
   )> }
 );
 
+export const BaseCommentFragmentDoc = gql`
+    fragment BaseComment on Comment {
+  id
+  text
+  user {
+    id
+    username
+    avatar
+  }
+  createdAt
+  updatedAt
+}
+    `;
 export const BaseTweetFragmentDoc = gql`
     fragment BaseTweet on Tweet {
   id
@@ -287,6 +381,41 @@ export const BaseUserFragmentDoc = gql`
   updatedAt
 }
     `;
+export const AddCommentDocument = gql`
+    mutation AddComment($tweetId: Int!, $text: String!) {
+  addComment(tweetId: $tweetId, text: $text) {
+    id
+    text
+  }
+}
+    `;
+export type AddCommentMutationFn = Apollo.MutationFunction<AddCommentMutation, AddCommentMutationVariables>;
+
+/**
+ * __useAddCommentMutation__
+ *
+ * To run a mutation, you first call `useAddCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCommentMutation, { data, loading, error }] = useAddCommentMutation({
+ *   variables: {
+ *      tweetId: // value for 'tweetId'
+ *      text: // value for 'text'
+ *   },
+ * });
+ */
+export function useAddCommentMutation(baseOptions?: Apollo.MutationHookOptions<AddCommentMutation, AddCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddCommentMutation, AddCommentMutationVariables>(AddCommentDocument, options);
+      }
+export type AddCommentMutationHookResult = ReturnType<typeof useAddCommentMutation>;
+export type AddCommentMutationResult = Apollo.MutationResult<AddCommentMutation>;
+export type AddCommentMutationOptions = Apollo.BaseMutationOptions<AddCommentMutation, AddCommentMutationVariables>;
 export const CreateTweetDocument = gql`
     mutation CreateTweet($body: String!, $media: String) {
   createTweet(body: $body, media: $media) {
@@ -325,6 +454,37 @@ export function useCreateTweetMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateTweetMutationHookResult = ReturnType<typeof useCreateTweetMutation>;
 export type CreateTweetMutationResult = Apollo.MutationResult<CreateTweetMutation>;
 export type CreateTweetMutationOptions = Apollo.BaseMutationOptions<CreateTweetMutation, CreateTweetMutationVariables>;
+export const DeleteCommentDocument = gql`
+    mutation DeleteComment($id: Int!) {
+  deleteComment(id: $id)
+}
+    `;
+export type DeleteCommentMutationFn = Apollo.MutationFunction<DeleteCommentMutation, DeleteCommentMutationVariables>;
+
+/**
+ * __useDeleteCommentMutation__
+ *
+ * To run a mutation, you first call `useDeleteCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCommentMutation, { data, loading, error }] = useDeleteCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCommentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCommentMutation, DeleteCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DeleteCommentDocument, options);
+      }
+export type DeleteCommentMutationHookResult = ReturnType<typeof useDeleteCommentMutation>;
+export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMutation>;
+export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<DeleteCommentMutation, DeleteCommentMutationVariables>;
 export const DeleteTweetDocument = gql`
     mutation DeleteTweet($id: Float!) {
   deleteTweet(id: $id)
@@ -468,6 +628,43 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const UpdateCommentDocument = gql`
+    mutation UpdateComment($id: Int!, $text: String!) {
+  updateComment(id: $id, text: $text) {
+    id
+    text
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateCommentMutationFn = Apollo.MutationFunction<UpdateCommentMutation, UpdateCommentMutationVariables>;
+
+/**
+ * __useUpdateCommentMutation__
+ *
+ * To run a mutation, you first call `useUpdateCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCommentMutation, { data, loading, error }] = useUpdateCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      text: // value for 'text'
+ *   },
+ * });
+ */
+export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCommentMutation, UpdateCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument, options);
+      }
+export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
+export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
+export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -513,9 +710,13 @@ export const TweetsDocument = gql`
         username
       }
     }
+    comments {
+      ...BaseComment
+    }
   }
 }
-    ${BaseTweetFragmentDoc}`;
+    ${BaseTweetFragmentDoc}
+${BaseCommentFragmentDoc}`;
 
 /**
  * __useTweetsQuery__

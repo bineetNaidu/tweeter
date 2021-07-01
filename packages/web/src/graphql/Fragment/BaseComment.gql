@@ -1,0 +1,11 @@
+fragment BaseComment on Comment {
+  id
+  text
+  user {
+    id
+    username
+    avatar
+  }
+  createdAt
+  updatedAt
+}
