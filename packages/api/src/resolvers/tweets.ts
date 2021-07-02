@@ -19,11 +19,12 @@ import { Bookmark } from '../entities/Bookmark';
 
 @Resolver(Tweet)
 export class TweetResolvers {
-  @FieldResolver(() => Boolean)
+  @FieldResolver(() => Boolean, { nullable: true })
   async bookmarkStatus(
     @Root() tweet: Tweet,
     @Ctx() { authUser }: IContext
-  ): Promise<boolean> {
+  ): Promise<boolean | null> {
+    if (!authUser) return null;
     const bm = await Bookmark.findOne({
       where: {
         user: authUser!.id,
