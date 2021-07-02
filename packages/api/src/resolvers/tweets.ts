@@ -15,9 +15,25 @@ import { getConnection } from 'typeorm';
 import { isAuthed } from '../utils/middlewares';
 import { Like } from '../entities/Like';
 import { Comment } from '../entities/Comment';
+import { Bookmark } from '../entities/Bookmark';
 
 @Resolver(Tweet)
 export class TweetResolvers {
+  @FieldResolver(() => Boolean)
+  async bookmarkStatus(
+    @Root() tweet: Tweet,
+    @Ctx() { authUser }: IContext
+  ): Promise<boolean> {
+    const bm = await Bookmark.findOne({
+      where: {
+        user: authUser!.id,
+        tweet,
+      },
+    });
+
+    return !!bm;
+  }
+
   @FieldResolver()
   async likes(@Root() tweet: Tweet) {
     const likes = await Like.find({
