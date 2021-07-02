@@ -15,6 +15,8 @@ import { Like } from './entities/Like';
 import { LikeResolver } from './resolvers/like';
 import { Comment } from './entities/Comment';
 import { CommentResolver } from './resolvers/comments';
+import { Bookmark } from './entities/Bookmark';
+import { BookmarkResolvers } from './resolvers/bookmarks';
 
 dotenv.config();
 
@@ -31,7 +33,7 @@ const bootstrap = async () => {
     url: process.env.DATABASE_URI,
     logging: true,
     synchronize: !___prod___,
-    entities: [Tweet, User, Like, Comment],
+    entities: [Tweet, User, Like, Comment, Bookmark],
   });
 
   if (!conn.isConnected) {
@@ -47,6 +49,7 @@ const bootstrap = async () => {
         UserResolvers,
         LikeResolver,
         CommentResolver,
+        BookmarkResolvers,
       ],
     }),
     cors: {
