@@ -1,8 +1,10 @@
 import { FC } from 'react';
 import {
   Tweet,
+  useAddBookmarkMutation,
   useDeleteTweetMutation,
   useLikeMutation,
+  useRemoveBookmarkMutation,
 } from '../generated/graphql';
 import { Avatar, Image, Menu, Dropdown } from 'antd';
 import {
@@ -27,6 +29,44 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
   const [like] = useLikeMutation();
   const { user, isLogged } = useStore();
   const [deleteTweet] = useDeleteTweetMutation();
+  const [addBookmark] = useAddBookmarkMutation();
+  const [removeBookmark] = useRemoveBookmarkMutation();
+
+  const handleAddOrRemoveBookmark = async (status: boolean) => {
+    if (!status) {
+      await addBookmark({
+        variables: { id: tweet.id },
+        update: (cache, { data }) => {
+          cache.writeFragment({
+            id: 'Tweet:' + tweet.id,
+            fragment: gql`
+              fragment __ on Tweet {
+                id
+                bookmarkStatus
+              }
+            `,
+            data: { id: tweet.id, bookmarkStatus: !!data?.addBookmark?.id },
+          });
+        },
+      });
+    } else {
+      await removeBookmark({
+        variables: { id: tweet.id },
+        update: (cache, { data }) => {
+          cache.writeFragment({
+            id: 'Tweet:' + tweet.id,
+            fragment: gql`
+              fragment __ on Tweet {
+                id
+                bookmarkStatus
+              }
+            `,
+            data: { id: tweet.id, bookmarkStatus: !data?.removeBookmark },
+          });
+        },
+      });
+    }
+  };
   const menu = (
     <Menu>
       <Menu.Item key="0">
@@ -120,8 +160,14 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
         >
           <HeartOutlined /> Like
         </button>
-        <button>
-          <SaveOutlined /> Save
+        <button
+          style={tweet.bookmarkStatus ? { color: 'blue' } : undefined}
+          onClick={async () =>
+            await handleAddOrRemoveBookmark(tweet.bookmarkStatus)
+          }
+        >
+          <SaveOutlined />{' '}
+          <span>{tweet.bookmarkStatus ? 'Saved' : 'Save'}</span>
         </button>
       </div>
       {isLogged && user !== null ? (
