@@ -1,0 +1,8 @@
+mutation AddBookmark($id: Float!) {
+  addBookmark(id: $id) {
+    id
+    tweet {
+      id
+    }
+  }
+}

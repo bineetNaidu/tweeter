@@ -16,6 +16,15 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type Bookmark = {
+  __typename?: 'Bookmark';
+  id: Scalars['Float'];
+  user: User;
+  tweet: Tweet;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   id: Scalars['Float'];
@@ -52,6 +61,8 @@ export type Mutation = {
   addComment: Comment;
   updateComment?: Maybe<Comment>;
   deleteComment: Scalars['Boolean'];
+  addBookmark?: Maybe<Bookmark>;
+  removeBookmark: Scalars['Boolean'];
 };
 
 
@@ -98,6 +109,16 @@ export type MutationDeleteCommentArgs = {
   id: Scalars['Int'];
 };
 
+
+export type MutationAddBookmarkArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type MutationRemoveBookmarkArgs = {
+  id: Scalars['Float'];
+};
+
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
@@ -105,6 +126,7 @@ export type Query = {
   tweets: Array<Tweet>;
   me?: Maybe<User>;
   user?: Maybe<User>;
+  bookmarks: Array<Bookmark>;
 };
 
 
@@ -133,6 +155,7 @@ export type Tweet = {
   likeStatus?: Maybe<Scalars['Boolean']>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  bookmarkStatus: Scalars['Boolean'];
 };
 
 export type User = {
@@ -167,16 +190,43 @@ export type BaseCommentFragment = (
 
 export type BaseTweetFragment = (
   { __typename?: 'Tweet' }
-  & Pick<Tweet, 'id' | 'body' | 'media' | 'has_media' | 'createdAt' | 'updatedAt'>
+  & Pick<Tweet, 'id' | 'body' | 'media' | 'has_media' | 'createdAt' | 'updatedAt' | 'likeStatus' | 'bookmarkStatus'>
   & { author: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'avatar'>
-  ) }
+  ), likes: Array<(
+    { __typename?: 'Like' }
+    & Pick<Like, 'id'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'username'>
+    ) }
+  )>, comments: Array<(
+    { __typename?: 'Comment' }
+    & BaseCommentFragment
+  )> }
 );
 
 export type BaseUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'first_name' | 'last_name' | 'username' | 'email' | 'bio' | 'avatar' | 'banner' | 'createdAt' | 'updatedAt'>
+);
+
+export type AddBookmarkMutationVariables = Exact<{
+  id: Scalars['Float'];
+}>;
+
+
+export type AddBookmarkMutation = (
+  { __typename?: 'Mutation' }
+  & { addBookmark?: Maybe<(
+    { __typename?: 'Bookmark' }
+    & Pick<Bookmark, 'id'>
+    & { tweet: (
+      { __typename?: 'Tweet' }
+      & Pick<Tweet, 'id'>
+    ) }
+  )> }
 );
 
 export type AddCommentMutationVariables = Exact<{
@@ -278,6 +328,16 @@ export type RegisterMutation = (
   ) }
 );
 
+export type Unnamed_1_MutationVariables = Exact<{
+  id: Scalars['Float'];
+}>;
+
+
+export type Unnamed_1_Mutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'removeBookmark'>
+);
+
 export type UpdateCommentMutationVariables = Exact<{
   id: Scalars['Int'];
   text: Scalars['String'];
@@ -289,6 +349,21 @@ export type UpdateCommentMutation = (
   & { updateComment?: Maybe<(
     { __typename?: 'Comment' }
     & Pick<Comment, 'id' | 'text' | 'createdAt' | 'updatedAt'>
+  )> }
+);
+
+export type BookmarksQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type BookmarksQuery = (
+  { __typename?: 'Query' }
+  & { bookmarks: Array<(
+    { __typename?: 'Bookmark' }
+    & Pick<Bookmark, 'id'>
+    & { tweet: (
+      { __typename?: 'Tweet' }
+      & BaseTweetFragment
+    ) }
   )> }
 );
 
@@ -310,18 +385,6 @@ export type TweetsQuery = (
   { __typename?: 'Query' }
   & { tweets: Array<(
     { __typename?: 'Tweet' }
-    & Pick<Tweet, 'likeStatus'>
-    & { likes: Array<(
-      { __typename?: 'Like' }
-      & Pick<Like, 'id'>
-      & { user: (
-        { __typename?: 'User' }
-        & Pick<User, 'username'>
-      ) }
-    )>, comments: Array<(
-      { __typename?: 'Comment' }
-      & BaseCommentFragment
-    )> }
     & BaseTweetFragment
   )> }
 );
@@ -365,8 +428,19 @@ export const BaseTweetFragmentDoc = gql`
   has_media
   createdAt
   updatedAt
+  likeStatus
+  likes {
+    id
+    user {
+      username
+    }
+  }
+  bookmarkStatus
+  comments {
+    ...BaseComment
+  }
 }
-    `;
+    ${BaseCommentFragmentDoc}`;
 export const BaseUserFragmentDoc = gql`
     fragment BaseUser on User {
   id
@@ -381,6 +455,42 @@ export const BaseUserFragmentDoc = gql`
   updatedAt
 }
     `;
+export const AddBookmarkDocument = gql`
+    mutation AddBookmark($id: Float!) {
+  addBookmark(id: $id) {
+    id
+    tweet {
+      id
+    }
+  }
+}
+    `;
+export type AddBookmarkMutationFn = Apollo.MutationFunction<AddBookmarkMutation, AddBookmarkMutationVariables>;
+
+/**
+ * __useAddBookmarkMutation__
+ *
+ * To run a mutation, you first call `useAddBookmarkMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddBookmarkMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addBookmarkMutation, { data, loading, error }] = useAddBookmarkMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useAddBookmarkMutation(baseOptions?: Apollo.MutationHookOptions<AddBookmarkMutation, AddBookmarkMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddBookmarkMutation, AddBookmarkMutationVariables>(AddBookmarkDocument, options);
+      }
+export type AddBookmarkMutationHookResult = ReturnType<typeof useAddBookmarkMutation>;
+export type AddBookmarkMutationResult = Apollo.MutationResult<AddBookmarkMutation>;
+export type AddBookmarkMutationOptions = Apollo.BaseMutationOptions<AddBookmarkMutation, AddBookmarkMutationVariables>;
 export const AddCommentDocument = gql`
     mutation AddComment($tweetId: Int!, $text: String!) {
   addComment(tweetId: $tweetId, text: $text) {
@@ -628,6 +738,37 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const Document = gql`
+    mutation ($id: Float!) {
+  removeBookmark(id: $id)
+}
+    `;
+export type MutationFn = Apollo.MutationFunction<Mutation, MutationVariables>;
+
+/**
+ * __useMutation__
+ *
+ * To run a mutation, you first call `useMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [mutation, { data, loading, error }] = useMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useMutation(baseOptions?: Apollo.MutationHookOptions<Mutation, MutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<Mutation, MutationVariables>(Document, options);
+      }
+export type MutationHookResult = ReturnType<typeof useMutation>;
+export type MutationResult = Apollo.MutationResult<Mutation>;
+export type MutationOptions = Apollo.BaseMutationOptions<Mutation, MutationVariables>;
 export const UpdateCommentDocument = gql`
     mutation UpdateComment($id: Int!, $text: String!) {
   updateComment(id: $id, text: $text) {
@@ -665,6 +806,43 @@ export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
 export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
 export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
+export const BookmarksDocument = gql`
+    query Bookmarks {
+  bookmarks {
+    id
+    tweet {
+      ...BaseTweet
+    }
+  }
+}
+    ${BaseTweetFragmentDoc}`;
+
+/**
+ * __useBookmarksQuery__
+ *
+ * To run a query within a React component, call `useBookmarksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBookmarksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBookmarksQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useBookmarksQuery(baseOptions?: Apollo.QueryHookOptions<BookmarksQuery, BookmarksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BookmarksQuery, BookmarksQueryVariables>(BookmarksDocument, options);
+      }
+export function useBookmarksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BookmarksQuery, BookmarksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BookmarksQuery, BookmarksQueryVariables>(BookmarksDocument, options);
+        }
+export type BookmarksQueryHookResult = ReturnType<typeof useBookmarksQuery>;
+export type BookmarksLazyQueryHookResult = ReturnType<typeof useBookmarksLazyQuery>;
+export type BookmarksQueryResult = Apollo.QueryResult<BookmarksQuery, BookmarksQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -703,20 +881,9 @@ export const TweetsDocument = gql`
     query Tweets {
   tweets {
     ...BaseTweet
-    likeStatus
-    likes {
-      id
-      user {
-        username
-      }
-    }
-    comments {
-      ...BaseComment
-    }
   }
 }
-    ${BaseTweetFragmentDoc}
-${BaseCommentFragmentDoc}`;
+    ${BaseTweetFragmentDoc}`;
 
 /**
  * __useTweetsQuery__

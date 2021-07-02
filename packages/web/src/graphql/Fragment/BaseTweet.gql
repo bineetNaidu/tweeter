@@ -10,4 +10,15 @@ fragment BaseTweet on Tweet {
   has_media
   createdAt
   updatedAt
+  likeStatus
+  likes {
+    id
+    user {
+      username
+    }
+  }
+  bookmarkStatus
+  comments {
+    ...BaseComment
+  }
 }
