@@ -35,12 +35,40 @@ export class BookmarkResolvers {
   ): Promise<Bookmark | null> {
     const user = await User.findOne(authUser!.id);
     if (!user) throw new Error('Not Authenticated');
+    const alreadyBookmarked = await Bookmark.findOne({
+      where: {
+        user,
+        tweet: id,
+      },
+    });
+    if (alreadyBookmarked) return null;
     const tweet = await Tweet.findOne(id);
     if (!tweet) return null;
+
     const bookmark = await Bookmark.create({
       user,
       tweet,
     }).save();
     return bookmark;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuthed)
+  async removeBookmark(
+    @Arg('id') id: number,
+    @Ctx() { authUser }: IContext
+  ): Promise<boolean> {
+    const tweet = await Tweet.findOne(id);
+    if (!tweet) return false;
+    const bkmrk = await Bookmark.findOne({
+      where: {
+        user: authUser!.id,
+        tweet: id,
+      },
+    });
+
+    if (!bkmrk) return false;
+    await bkmrk.remove();
+    return true;
   }
 }
