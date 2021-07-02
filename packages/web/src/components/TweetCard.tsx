@@ -16,6 +16,8 @@ import {
 } from '@ant-design/icons';
 import styles from '../styles/tweetCard.module.scss';
 import { useStore } from '../lib/store';
+import { CreateCommentForm } from './CreateCommentForm';
+import { gql } from '@apollo/client';
 
 interface Props {
   tweet: Tweet;
@@ -80,7 +82,10 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
         <p>{tweet.body}</p>
         {tweet.has_media ? <Image width={'100%'} src={tweet.media!} /> : null}
         <div className={styles.tweet_metadata}>
-          <span>{tweet.likes.length} likes</span>
+          {tweet.likes.length > 0 && <span>{tweet.likes.length} likes</span>}
+          {tweet.comments.length > 0 && (
+            <span>{tweet.comments.length} comments</span>
+          )}
         </div>
       </div>
 
@@ -96,6 +101,20 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
           onClick={async () => {
             await like({
               variables: { tweetId: tweet.id },
+              update: (cache, { data }) => {
+                cache.writeFragment({
+                  id: 'Tweet:' + tweet.id,
+                  fragment: gql`
+                    fragment __ on Tweet {
+                      id
+                      likes {
+                        id
+                      }
+                    }
+                  `,
+                  data: { id: tweet.id, likes: data?.like },
+                });
+              },
             });
           }}
         >
@@ -105,6 +124,9 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
           <SaveOutlined /> Save
         </button>
       </div>
+      {isLogged && user !== null ? (
+        <CreateCommentForm tweetId={tweet.id} />
+      ) : null}
     </div>
   );
 };
