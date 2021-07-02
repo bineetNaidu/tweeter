@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import {
-  Tweet,
+  BaseTweetFragment,
   useAddBookmarkMutation,
   useDeleteTweetMutation,
   useLikeMutation,
@@ -22,7 +22,7 @@ import { CreateCommentForm } from './CreateCommentForm';
 import { gql } from '@apollo/client';
 
 interface Props {
-  tweet: Tweet;
+  tweet: BaseTweetFragment;
 }
 
 export const TweetCard: FC<Props> = ({ tweet }) => {
@@ -47,6 +47,7 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
             `,
             data: { id: tweet.id, bookmarkStatus: !!data?.addBookmark?.id },
           });
+          cache.evict({ fieldName: 'bookmarks' });
         },
       });
     } else {
@@ -63,6 +64,8 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
             `,
             data: { id: tweet.id, bookmarkStatus: !data?.removeBookmark },
           });
+
+          cache.evict({ fieldName: 'bookmarks' });
         },
       });
     }
