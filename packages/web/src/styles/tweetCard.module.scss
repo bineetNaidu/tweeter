@@ -25,6 +25,11 @@ $grey-color: rgb(157, 151, 151);
 
       & span:first-child {
         font-weight: 800;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
       }
 
       & span:last-child {

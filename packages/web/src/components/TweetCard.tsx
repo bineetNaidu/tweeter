@@ -20,6 +20,7 @@ import styles from '../styles/tweetCard.module.scss';
 import { useStore } from '../lib/store';
 import { CreateCommentForm } from './CreateCommentForm';
 import { gql } from '@apollo/client';
+import Link from 'next/link';
 
 interface Props {
   tweet: BaseTweetFragment;
@@ -103,7 +104,9 @@ export const TweetCard: FC<Props> = ({ tweet }) => {
           alt={tweet.author.username}
         />
         <div className={styles.header__meta}>
-          <span>{tweet.author.username}</span>
+          <Link href={`/@${tweet.author.username}`}>
+            <span>{tweet.author.username}</span>
+          </Link>
           <span>{new Date(tweet.createdAt).toUTCString()}</span>
         </div>
 
