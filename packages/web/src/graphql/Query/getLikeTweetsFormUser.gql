@@ -1,0 +1,8 @@
+query GetLikeTweetsFromUser($username: String!) {
+  getLikeTweetsFromUser(username: $username) {
+    id
+    tweet {
+      ...BaseTweet
+    }
+  }
+}
