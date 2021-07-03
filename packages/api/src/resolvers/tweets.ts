@@ -75,6 +75,47 @@ export class TweetResolvers {
     return !!like;
   }
 
+  @Query(() => [Tweet])
+  @UseMiddleware(isAuthed)
+  async getTweetFromUser(@Arg('username') username: string): Promise<Tweet[]> {
+    const user = await User.findOne({ where: { username } });
+    if (!user) throw new Error('User Not Found!');
+    const tweets = await Tweet.find({
+      where: { author: user.id },
+      relations: ['likes', 'comments', 'author'],
+    });
+
+    return tweets;
+  }
+  @Query(() => [Like])
+  @UseMiddleware(isAuthed)
+  async getLikeTweetsFromUser(
+    @Arg('username') username: string
+  ): Promise<Like[]> {
+    const user = await User.findOne({ where: { username } });
+    if (!user) throw new Error('User Not Found!');
+    const likes = await Like.find({
+      where: { user: user.id },
+      relations: ['tweet', 'tweet.author', 'tweet.likes', 'tweet.comments'],
+    });
+    return likes;
+  }
+
+  @Query(() => [Tweet])
+  @UseMiddleware(isAuthed)
+  async getMediaTweetsFromUser(
+    @Arg('username') username: string
+  ): Promise<Tweet[]> {
+    const user = await User.findOne({ where: { username } });
+    if (!user) throw new Error('User Not Found!');
+    const tweets = await Tweet.find({
+      where: { author: user.id, has_media: true },
+      relations: ['likes', 'comments', 'author'],
+    });
+
+    return tweets;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuthed)
   async deleteTweet(
